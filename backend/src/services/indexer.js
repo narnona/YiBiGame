@@ -82,6 +82,8 @@ class IndexerService {
         console.log(`[INDEXER] processed batch ${from}-${to}: created=${createdEvents.length}, solved=${solvedEvents.length}`);
         this.lastSyncedBlock = to;
         from = to + 1;
+        // 每批处理完后延时 0.2 秒，避免请求过于频繁
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
       console.log(`[INDEXER] sync complete at block ${this.lastSyncedBlock}`);
     } catch (error) {
@@ -120,7 +122,7 @@ class IndexerService {
       const name = args.name || args[2];
       const size = args.size || args[3];
       const hintsCount = args.hintsCount || args[4];
-      const txHash = event.log?.transactionHash || event.log?.hash || null;
+      const txHash = event.log?.transactionHash || event.transactionHash || null;
       
       if (!txHash) {
         console.error('[INDEXER] LevelCreated event missing txHash:', event);
@@ -132,8 +134,15 @@ class IndexerService {
       
       let createdAt;
       try {
-        const block = await event.getBlock();
-        createdAt = new Date(block.timestamp * 1000);
+        if (event.log && event.log.getBlock) {
+          const block = await event.log.getBlock();
+          createdAt = new Date(block.timestamp * 1000);
+        } else if (event.getBlock) {
+          const block = await event.getBlock();
+          createdAt = new Date(block.timestamp * 1000);
+        } else {
+          throw new Error('No getBlock method available');
+        }
       } catch (blockErr) {
         console.warn('[INDEXER] Failed to get block for createdAt:', blockErr.message);
         createdAt = new Date();
@@ -167,7 +176,7 @@ class IndexerService {
       const args = event.args;
       const levelId = args.levelId || args[0];
       const solver = args.solver || args[1];
-      const txHash = event.log?.transactionHash || event.log?.hash || null;
+      const txHash = event.log?.transactionHash || event.transactionHash || null;
       
       if (!txHash) {
         console.error('[INDEXER] LevelSolved event missing txHash:', event);
@@ -176,8 +185,15 @@ class IndexerService {
       
       let timestamp;
       try {
-        const block = await event.getBlock();
-        timestamp = new Date(block.timestamp * 1000);
+        if (event.log && event.log.getBlock) {
+          const block = await event.log.getBlock();
+          timestamp = new Date(block.timestamp * 1000);
+        } else if (event.getBlock) {
+          const block = await event.getBlock();
+          timestamp = new Date(block.timestamp * 1000);
+        } else {
+          throw new Error('No getBlock method available');
+        }
       } catch (blockErr) {
         console.warn('[INDEXER] Failed to get block for timestamp:', blockErr.message);
         timestamp = new Date();
