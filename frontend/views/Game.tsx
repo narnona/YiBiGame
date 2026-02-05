@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Level, Point } from '../types';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useConnect } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
+import { injected } from 'wagmi/connectors';
 import { CONTRACT_ADDRESS, CONTRACT_ABI, PointInput } from '../contract';
 
 // Game 组件属性接口
@@ -15,6 +16,7 @@ interface GameProps {
 const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
   // 钱包连接状态
   const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
   // 写入合约相关状态
   const { data: hash, writeContract, isPending: isWritePending, error: writeError } = useWriteContract();
   // 等待交易确认
@@ -36,6 +38,8 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
   const [isValidPath, setIsValidPath] = useState(true);
   // 是否正在拖拽
   const [isDragging, setIsDragging] = useState(false);
+  // 触摸位置引用
+  const touchTargetRef = useRef<HTMLElement | null>(null);
   // 音频上下文引用
   const audioCtxRef = useRef<AudioContext | null>(null);
 
@@ -43,8 +47,11 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
   const totalCells = level.gridSize * level.gridSize;
   // 按提示值排序的提示点数组
   const sortedHints = [...level.hints].sort((a, b) => a.value - b.value);
-  const baseCell = Math.round(Math.min(64, Math.max(28, 420 / level.gridSize)));
-  const gapPx = Math.round(Math.max(4, baseCell * 0.08));
+  // 响应式计算格子大小：移动端使用更小的可用宽度，桌面端使用更大的
+  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 420;
+  const maxContainerWidth = screenWidth < 640 ? screenWidth - 48 : 420;
+  const baseCell = Math.round(Math.min(72, Math.max(32, maxContainerWidth / level.gridSize)));
+  const gapPx = Math.round(Math.max(6, baseCell * 0.1));
   const containerSize = baseCell * level.gridSize + gapPx * (level.gridSize - 1);
   const fontSizePx = Math.round(baseCell * 0.45);
 
@@ -184,18 +191,54 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
     addCoord(clickedCoord);
   };
 
+  // 处理触摸移动事件
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+
+    e.preventDefault();
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element && element.closest('[data-cell-index]')) {
+      const cell = element.closest('[data-cell-index]') as HTMLElement;
+      const index = parseInt(cell.getAttribute('data-cell-index') || '-1');
+
+      if (index >= 0 && index < level.gridSize * level.gridSize) {
+        const coord = indexToCoord(index);
+        const lastCoord = userPath[userPath.length - 1];
+
+        // 只有当格子与最后一个格子相邻时才添加
+        if (!lastCoord || areAdjacent(lastCoord, coord)) {
+          addCoord(coord);
+        }
+      }
+    }
+  };
+
+  // 处理触摸结束事件
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    touchTargetRef.current = null;
+  };
+
   // 提交解决方案到区块链
   const handleSubmit = async () => {
+    console.log('handleSubmit called', { isConnected, isFinished, isValidPath });
+    if (!isConnected) {
+      console.log('Attempting to connect wallet...');
+      try {
+        await connect({ connector: injected() });
+      } catch (error) {
+        console.error('Failed to connect wallet:', error);
+      }
+      return;
+    }
     if (!isFinished) return;
     if (!isValidPath) {
       alert("路径不匹配提示点数字，请检查！");
       return;
     }
-    if (!isConnected) {
-      alert("请先连接钱包");
-      return;
-    }
-    
+
     setSubmitStatus('submitting');
     setErrorMessage('');
 
@@ -329,13 +372,15 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
         <div className="relative mx-auto" style={{ width: `${containerSize}px`, height: `${containerSize}px` }}>
           {getPathSVG()}
           <div
-            className="grid"
+            className="grid touch-none"
             style={{
               gridTemplateColumns: `repeat(${level.gridSize}, ${baseCell}px)`,
               gridAutoRows: `${baseCell}px`,
               gap: `${gapPx}px`
             }}
             onPointerUp={() => setIsDragging(false)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
           {Array.from({ length: level.gridSize }).map((_, y) =>
             Array.from({ length: level.gridSize }).map((_, x) => {
@@ -353,8 +398,9 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
               const isAdjacentToLast = lastCoord ? areAdjacent(lastCoord, { x, y }) : true;
               
               return (
-                <div 
+                <div
                   key={index}
+                  data-cell-index={index}
                   onClick={() => handleCellClick(index)}
                   onPointerDown={() => {
                     setIsDragging(true);
@@ -362,6 +408,12 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
                   }}
                   onPointerEnter={() => {
                     if (isDragging) addCoord({ x, y });
+                  }}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                    touchTargetRef.current = e.currentTarget;
+                    addCoord({ x, y });
                   }}
                   className={`rounded-2xl flex items-center justify-center transition-all cursor-pointer select-none relative z-10
                     ${isUserPath 
@@ -430,20 +482,22 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
         </button>
         {/* 提交按钮 */}
         <button 
-          disabled={!isFinished || !isValidPath || submitStatus === 'submitting' || submitStatus === 'success'}
+          disabled={isConnected ? (!isFinished || !isValidPath || submitStatus === 'submitting' || submitStatus === 'success') : false}
           onClick={handleSubmit}
           className={`flex-1 flex items-center justify-center gap-3 py-6 px-8 text-white text-xl font-bold transition-all rounded-[2rem] shadow-xl active:scale-[0.98] ${
-            submitStatus === 'success' 
-              ? 'bg-green-500 hover:opacity-95 shadow-green-500/30' 
+            submitStatus === 'success'
+              ? 'bg-green-500 hover:opacity-95 shadow-green-500/30'
               : submitStatus === 'error'
                 ? 'bg-red-500 hover:opacity-95 shadow-red-500/30'
                 : submitStatus === 'submitting' || isConfirming
                   ? 'bg-slate-400 shadow-slate-400/30 cursor-wait'
                   : !isValidPath
                     ? 'bg-red-500/80 shadow-red-500/30 cursor-not-allowed'
-                    : isFinished 
-                      ? 'bg-secondary hover:opacity-95 shadow-sky-400/30' 
-                      : 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed'
+                    : !isConnected
+                      ? 'bg-secondary hover:opacity-95 shadow-sky-400/30'
+                      : isFinished
+                        ? 'bg-secondary hover:opacity-95 shadow-sky-400/30'
+                        : 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed'
           }`}
         >
           {submitStatus === 'submitting' || isConfirming ? (

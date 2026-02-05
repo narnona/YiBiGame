@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Level, Point, Hint } from '../types';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useConnect } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
+import { injected } from 'wagmi/connectors';
 import { CONTRACT_ADDRESS, CONTRACT_ABI, HintInput } from '../contract';
 
 // Editor 组件属性接口
@@ -13,9 +14,10 @@ interface EditorProps {
 // Editor 组件：关卡编辑器，支持两阶段编辑模式（绘制路径→设定提示）
   const Editor: React.FC<EditorProps> = ({ onSubmit, onCancel }) => {
     // 钱包连接状态
-    const { address, isConnected } = useAccount();
-    // 写入合约相关状态
-    const { data: hash, writeContract, isPending: isWritePending, error: writeError } = useWriteContract();
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
+  // 写入合约相关状态
+  const { data: hash, writeContract, isPending: isWritePending, error: writeError } = useWriteContract();
     // 等待交易确认
     const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
       hash,
@@ -42,10 +44,12 @@ interface EditorProps {
   // 提示点验证信息
   const [hintValidationMessage, setHintValidationMessage] = useState('');
 
-  const baseCell = Math.round(Math.min(64, Math.max(28, 480 / gridSize)));
-    const gapPx = Math.round(Math.max(4, baseCell * 0.08));
-    const containerSize = baseCell * gridSize + gapPx * (gridSize - 1);
-    const fontSizePx = Math.round(baseCell * 0.45);
+  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 420;
+  const maxContainerWidth = screenWidth < 1024 ? screenWidth - 48 : 480;
+  const baseCell = Math.round(Math.min(72, Math.max(32, maxContainerWidth / gridSize)));
+  const gapPx = Math.round(Math.max(6, baseCell * 0.1));
+  const containerSize = baseCell * gridSize + gapPx * (gridSize - 1);
+  const fontSizePx = Math.round(baseCell * 0.45);
 
   // 索引转坐标
   const indexToCoord = (index: number): Point => {
@@ -69,6 +73,7 @@ interface EditorProps {
   };
 
   const [isDragging, setIsDragging] = useState(false);
+  const touchTargetRef = useRef<HTMLElement | null>(null);
   const interactionRef = useRef({ isModified: false });
 
   // 统一处理路径交互（点击或拖拽）
@@ -116,6 +121,28 @@ interface EditorProps {
     if (mode === 'path' && isDragging) {
       handlePathInteraction(index);
     }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (mode !== 'path' || !isDragging) return;
+
+    e.preventDefault();
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element && element.closest('[data-cell-index]')) {
+      const cell = element.closest('[data-cell-index]') as HTMLElement;
+      const index = parseInt(cell.getAttribute('data-cell-index') || '-1');
+
+      if (index >= 0 && index < gridSize * gridSize) {
+        handlePathInteraction(index);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    touchTargetRef.current = null;
   };
 
   // 处理格子点击事件
@@ -198,8 +225,14 @@ interface EditorProps {
 
   // 提交关卡到区块链
   const submit = async () => {
+    console.log('submit called', { isConnected });
     if (!isConnected) {
-      alert("请先连接钱包");
+      console.log('Attempting to connect wallet in Editor...');
+      try {
+        await connect({ connector: injected() });
+      } catch (error) {
+        console.error('Failed to connect wallet in Editor:', error);
+      }
       return;
     }
     if (!name) {
@@ -523,13 +556,15 @@ interface EditorProps {
                 onClick={submit}
                 disabled={submitStatus === 'submitting' || isConfirming || submitStatus === 'success'}
                 className={`flex-[2] py-4 font-bold rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 ${
-                  submitStatus === 'success' 
-                    ? 'bg-green-500 hover:bg-green-600 text-white shadow-green-500/40' 
+                  submitStatus === 'success'
+                    ? 'bg-green-500 hover:bg-green-600 text-white shadow-green-500/40'
                     : submitStatus === 'error'
                       ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/40'
                       : submitStatus === 'submitting' || isConfirming
                         ? 'bg-slate-400 text-white shadow-slate-400/40 cursor-wait'
-                        : 'bg-primary hover:bg-indigo-600 text-white shadow-primary/40'
+                        : !isConnected
+                          ? 'bg-secondary hover:opacity-95 text-white shadow-sky-400/40'
+                          : 'bg-primary hover:bg-indigo-600 text-white shadow-primary/40'
                 }`}
               >
                 {submitStatus === 'submitting' || isConfirming ? (
