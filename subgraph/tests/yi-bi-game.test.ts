@@ -9,7 +9,7 @@ import {
 import { BigInt, Address } from "@graphprotocol/graph-ts"
 import { LevelCreated } from "../generated/schema"
 import { LevelCreated as LevelCreatedEvent } from "../generated/YiBiGame/YiBiGame"
-import { handleLevelCreated } from "../src/yi-bi-game"
+import { handleLevelCreated } from "../src/yibi-game"
 import { createLevelCreatedEvent } from "./yi-bi-game-utils"
 
 // Tests structure (matchstick-as >=0.5.0)

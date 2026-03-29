@@ -16,8 +16,9 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - LevelCreated
-        - LevelSolved
+        - Level
+        - Hint
+        - SolveRecord
       abis:
         - name: YiBiGame
           file: ./abis/YiBiGame.json
@@ -26,4 +27,4 @@ dataSources:
           handler: handleLevelCreated
         - event: LevelSolved(indexed uint256,indexed address,uint256,bool)
           handler: handleLevelSolved
-      file: ./src/yi-bi-game.ts
+      file: ./src/yibi-game.ts

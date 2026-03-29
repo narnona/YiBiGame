@@ -10,7 +10,7 @@ export const config = createConfig({
     walletConnect({ projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '' }),
   ],
   transports: {
-    [sepolia.id]: http(),
+    [sepolia.id]: http(import.meta.env.VITE_SEPOLIA_RPC_URL),
   },
 });
 

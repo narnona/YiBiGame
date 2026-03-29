@@ -94,23 +94,38 @@ PORT=3001
 
 ```env
 VITE_CONTRACT_ADDRESS=0x1294CAD0eD3b97b8052AfceF040A3d65dF3C2811
+VITE_SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_API_KEY
+
+# 数据来源选择（默认 subgraph）
+# - subgraph：从 The Graph 获取关卡/统计等数据（本仓库已提供可用的部署地址）
+# - backend：从你自己部署的后端 REST API 获取关卡/统计等数据（需要自行维护数据库与索引器）
+VITE_DATA_SOURCE=subgraph
+
+# 当 VITE_DATA_SOURCE=subgraph 时需要
+VITE_SUBGRAPH_URL=https://api.studio.thegraph.com/query/1744111/yibigame-sepolia/version/latest
+
+# 当 VITE_DATA_SOURCE=backend 时需要（默认 http://localhost:3001）
+VITE_API_BASE_URL=http://localhost:3001
 ```
 
 ### 3. 安装依赖
 
 ```bash
-# 安装后端依赖
-cd backend
-npm install
-
 # 安装前端依赖
-cd ../frontend
+cd frontend
+npm install
+```
+
+如需切换到后端数据源（`VITE_DATA_SOURCE=backend`），再安装后端依赖：
+
+```bash
+cd backend
 npm install
 ```
 
 ### 4. 启动数据库
 
-确保 PostgreSQL 服务正在运行，并创建数据库：
+仅当你选择后端数据源（`VITE_DATA_SOURCE=backend`）时需要 PostgreSQL。确保 PostgreSQL 服务正在运行，并创建数据库：
 
 ```bash
 createdb yibigame_dev
@@ -119,17 +134,23 @@ createdb yibigame_dev
 ### 5. 启动服务
 
 ```bash
-# 启动后端 (终端 1)
-cd backend
-npm start
-
-# 启动前端 (终端 2)
 cd frontend
 npm run dev
 ```
 
 - 前端: http://localhost:3000
-- 后端 API: http://localhost:3001
+- 后端 API（可选，仅当 `VITE_DATA_SOURCE=backend`）：http://localhost:3001
+
+## 数据源切换（The Graph / 后端）
+
+默认情况下前端使用 The Graph（`VITE_DATA_SOURCE=subgraph`），并已配置可用的 Subgraph Endpoint，因此不依赖本地数据库与后端服务。
+
+如果需要切换回从后端 REST API 获取数据：
+- 在 `frontend/.env.local` 设置 `VITE_DATA_SOURCE=backend`
+- 如后端不在本机或端口不同，设置 `VITE_API_BASE_URL`（例如 `http://localhost:3001`）
+- 启动后端与前端：
+  - `cd backend && npm start`
+  - `cd frontend && npm run dev`
 
 
 ## API 文档

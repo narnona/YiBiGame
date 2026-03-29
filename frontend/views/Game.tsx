@@ -22,6 +22,7 @@ const Game: React.FC<GameProps> = ({ level, onBack, onComplete }) => {
   // 等待交易确认
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
+    pollingInterval: 4000,
   });
 
   // 用户绘制的路径

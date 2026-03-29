@@ -7,9 +7,12 @@ import Create from './views/Create';
 import Play from './views/Play';
 
 const App: React.FC = () => {
-  // 深色模式状态，初始化时从文档元素获取
+  // 深色模式状态，初始化时优先读取 localStorage（避免刷新时丢失）
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains('dark');
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark') return true;
+    if (stored === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   // 监听系统深色模式变化

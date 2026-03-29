@@ -21,6 +21,7 @@ interface EditorProps {
     // 等待交易确认
     const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
       hash,
+      pollingInterval: 4000,
     });
 
     // 关卡名称
