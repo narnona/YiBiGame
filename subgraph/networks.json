@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "YiBiGame": {
+      "address": "0x1294CAD0eD3b97b8052AfceF040A3d65dF3C2811",
+      "startBlock": 10182959
+    }
+  }
+}
