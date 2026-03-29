@@ -1,352 +1,350 @@
 [
-  { "inputs": [], "name": "EmptyHints", "type": "error" },
+  { "name": "EmptyHints", "type": "error", "inputs": [] },
   {
-    "inputs": [
-      { "internalType": "uint16", "name": "currentValue", "type": "uint16" },
-      { "internalType": "uint16", "name": "previousValue", "type": "uint16" }
-    ],
     "name": "HintValueNotInOrder",
-    "type": "error"
+    "type": "error",
+    "inputs": [
+      { "name": "currentValue", "type": "uint16", "internalType": "uint16" },
+      { "name": "previousValue", "type": "uint16", "internalType": "uint16" }
+    ]
   },
   {
-    "inputs": [
-      { "internalType": "uint8", "name": "x", "type": "uint8" },
-      { "internalType": "uint8", "name": "y", "type": "uint8" },
-      { "internalType": "uint8", "name": "size", "type": "uint8" }
-    ],
     "name": "InvalidHintCoordinate",
-    "type": "error"
+    "type": "error",
+    "inputs": [
+      { "name": "x", "type": "uint8", "internalType": "uint8" },
+      { "name": "y", "type": "uint8", "internalType": "uint8" },
+      { "name": "size", "type": "uint8", "internalType": "uint8" }
+    ]
   },
   {
-    "inputs": [{ "internalType": "uint16", "name": "value", "type": "uint16" }],
     "name": "InvalidHintValue",
-    "type": "error"
+    "type": "error",
+    "inputs": [{ "name": "value", "type": "uint16", "internalType": "uint16" }]
   },
   {
-    "inputs": [{ "internalType": "uint8", "name": "size", "type": "uint8" }],
     "name": "InvalidSize",
-    "type": "error"
+    "type": "error",
+    "inputs": [{ "name": "size", "type": "uint8", "internalType": "uint8" }]
   },
   {
-    "inputs": [
-      { "internalType": "bytes32", "name": "levelHash", "type": "bytes32" }
-    ],
     "name": "LevelAlreadyExists",
-    "type": "error"
+    "type": "error",
+    "inputs": [
+      { "name": "levelHash", "type": "bytes32", "internalType": "bytes32" }
+    ]
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "levelId", "type": "uint256" }
-    ],
     "name": "LevelNotFound",
-    "type": "error"
+    "type": "error",
+    "inputs": [
+      { "name": "levelId", "type": "uint256", "internalType": "uint256" }
+    ]
   },
   {
-    "inputs": [
-      { "internalType": "string", "name": "reason", "type": "string" }
-    ],
     "name": "SolutionInvalid",
-    "type": "error"
+    "type": "error",
+    "inputs": [{ "name": "reason", "type": "string", "internalType": "string" }]
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "levelId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "size",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "hintsCount",
-        "type": "uint256"
-      }
-    ],
     "name": "LevelCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
+    "type": "event",
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "uint256",
         "name": "levelId",
-        "type": "uint256"
-      },
-      {
+        "type": "uint256",
         "indexed": true,
-        "internalType": "address",
-        "name": "solver",
-        "type": "address"
+        "internalType": "uint256"
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "pathLength",
-        "type": "uint256"
+        "name": "creator",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       },
       {
+        "name": "name",
+        "type": "string",
         "indexed": false,
-        "internalType": "bool",
-        "name": "isFirstCompletion",
-        "type": "bool"
+        "internalType": "string"
+      },
+      {
+        "name": "size",
+        "type": "uint8",
+        "indexed": false,
+        "internalType": "uint8"
+      },
+      {
+        "name": "hintsCount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       }
     ],
+    "anonymous": false
+  },
+  {
     "name": "LevelSolved",
-    "type": "event"
-  },
-  {
+    "type": "event",
     "inputs": [
-      { "internalType": "string", "name": "name", "type": "string" },
-      { "internalType": "uint8", "name": "size", "type": "uint8" },
       {
-        "components": [
-          {
-            "components": [
-              { "internalType": "uint8", "name": "x", "type": "uint8" },
-              { "internalType": "uint8", "name": "y", "type": "uint8" }
-            ],
-            "internalType": "struct YiBiGame.Point",
-            "name": "coord",
-            "type": "tuple"
-          },
-          { "internalType": "uint16", "name": "value", "type": "uint16" }
-        ],
-        "internalType": "struct YiBiGame.Hint[]",
-        "name": "hints",
-        "type": "tuple[]"
+        "name": "levelId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "solver",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "pathLength",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "isFirstCompletion",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
       }
     ],
-    "name": "createLevel",
-    "outputs": [
-      { "internalType": "uint256", "name": "levelId", "type": "uint256" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "anonymous": false
   },
   {
+    "name": "createLevel",
+    "type": "function",
     "inputs": [
-      { "internalType": "uint256", "name": "levelId", "type": "uint256" }
+      { "name": "name", "type": "string", "internalType": "string" },
+      { "name": "size", "type": "uint8", "internalType": "uint8" },
+      {
+        "name": "hints",
+        "type": "tuple[]",
+        "components": [
+          {
+            "name": "coord",
+            "type": "tuple",
+            "components": [
+              { "name": "x", "type": "uint8", "internalType": "uint8" },
+              { "name": "y", "type": "uint8", "internalType": "uint8" }
+            ],
+            "internalType": "struct YiBiGame.Point"
+          },
+          { "name": "value", "type": "uint16", "internalType": "uint16" }
+        ],
+        "internalType": "struct YiBiGame.Hint[]"
+      }
     ],
+    "outputs": [
+      { "name": "levelId", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
     "name": "getLevel",
+    "type": "function",
+    "inputs": [
+      { "name": "levelId", "type": "uint256", "internalType": "uint256" }
+    ],
     "outputs": [
       {
+        "name": "level",
+        "type": "tuple",
         "components": [
-          { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "uint8", "name": "size", "type": "uint8" },
-          { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "createdAt", "type": "uint256" },
+          { "name": "id", "type": "uint256", "internalType": "uint256" },
+          { "name": "name", "type": "string", "internalType": "string" },
+          { "name": "size", "type": "uint8", "internalType": "uint8" },
+          { "name": "creator", "type": "address", "internalType": "address" },
+          { "name": "createdAt", "type": "uint256", "internalType": "uint256" },
           {
-            "internalType": "uint256",
             "name": "completionCount",
-            "type": "uint256"
+            "type": "uint256",
+            "internalType": "uint256"
           },
           {
+            "name": "hints",
+            "type": "tuple[]",
             "components": [
               {
-                "components": [
-                  { "internalType": "uint8", "name": "x", "type": "uint8" },
-                  { "internalType": "uint8", "name": "y", "type": "uint8" }
-                ],
-                "internalType": "struct YiBiGame.Point",
                 "name": "coord",
-                "type": "tuple"
+                "type": "tuple",
+                "components": [
+                  { "name": "x", "type": "uint8", "internalType": "uint8" },
+                  { "name": "y", "type": "uint8", "internalType": "uint8" }
+                ],
+                "internalType": "struct YiBiGame.Point"
               },
-              { "internalType": "uint16", "name": "value", "type": "uint16" }
+              { "name": "value", "type": "uint16", "internalType": "uint16" }
             ],
-            "internalType": "struct YiBiGame.Hint[]",
-            "name": "hints",
-            "type": "tuple[]"
+            "internalType": "struct YiBiGame.Hint[]"
           }
         ],
-        "internalType": "struct YiBiGame.Level",
-        "name": "level",
-        "type": "tuple"
+        "internalType": "struct YiBiGame.Level"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "stateMutability": "view"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "offset", "type": "uint256" },
-      { "internalType": "uint256", "name": "limit", "type": "uint256" }
-    ],
     "name": "getLevels",
+    "type": "function",
+    "inputs": [
+      { "name": "offset", "type": "uint256", "internalType": "uint256" },
+      { "name": "limit", "type": "uint256", "internalType": "uint256" }
+    ],
     "outputs": [
       {
-        "components": [
-          { "internalType": "uint256", "name": "index", "type": "uint256" },
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "uint8", "name": "size", "type": "uint8" },
-          {
-            "internalType": "uint256",
-            "name": "hintsCount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "completionCount",
-            "type": "uint256"
-          },
-          { "internalType": "uint256", "name": "createdAt", "type": "uint256" }
-        ],
-        "internalType": "struct YiBiGame.LevelInfo[]",
         "name": "levelInfos",
-        "type": "tuple[]"
+        "type": "tuple[]",
+        "components": [
+          { "name": "index", "type": "uint256", "internalType": "uint256" },
+          { "name": "name", "type": "string", "internalType": "string" },
+          { "name": "size", "type": "uint8", "internalType": "uint8" },
+          {
+            "name": "hintsCount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "completionCount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          { "name": "createdAt", "type": "uint256", "internalType": "uint256" }
+        ],
+        "internalType": "struct YiBiGame.LevelInfo[]"
       },
-      { "internalType": "uint256", "name": "total", "type": "uint256" }
+      { "name": "total", "type": "uint256", "internalType": "uint256" }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "stateMutability": "view"
   },
   {
-    "inputs": [],
     "name": "getLevelsCount",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "address", "name": "", "type": "address" }
-    ],
     "name": "hasCompleted",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
+    "type": "function",
     "inputs": [
-      { "internalType": "uint256", "name": "levelId", "type": "uint256" },
-      { "internalType": "address", "name": "player", "type": "address" }
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "address", "internalType": "address" }
     ],
-    "name": "hasPlayerCompleted",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
   },
   {
+    "name": "hasPlayerCompleted",
+    "type": "function",
     "inputs": [
-      { "internalType": "uint8", "name": "size", "type": "uint8" },
+      { "name": "levelId", "type": "uint256", "internalType": "uint256" },
+      { "name": "player", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "levelExists",
+    "type": "function",
+    "inputs": [
+      { "name": "size", "type": "uint8", "internalType": "uint8" },
       {
+        "name": "hints",
+        "type": "tuple[]",
         "components": [
           {
-            "components": [
-              { "internalType": "uint8", "name": "x", "type": "uint8" },
-              { "internalType": "uint8", "name": "y", "type": "uint8" }
-            ],
-            "internalType": "struct YiBiGame.Point",
             "name": "coord",
-            "type": "tuple"
+            "type": "tuple",
+            "components": [
+              { "name": "x", "type": "uint8", "internalType": "uint8" },
+              { "name": "y", "type": "uint8", "internalType": "uint8" }
+            ],
+            "internalType": "struct YiBiGame.Point"
           },
-          { "internalType": "uint16", "name": "value", "type": "uint16" }
+          { "name": "value", "type": "uint16", "internalType": "uint16" }
         ],
-        "internalType": "struct YiBiGame.Hint[]",
-        "name": "hints",
-        "type": "tuple[]"
+        "internalType": "struct YiBiGame.Hint[]"
       }
     ],
-    "name": "levelExists",
     "outputs": [
-      { "internalType": "bool", "name": "exists", "type": "bool" },
-      { "internalType": "bytes32", "name": "levelHash", "type": "bytes32" }
+      { "name": "exists", "type": "bool", "internalType": "bool" },
+      { "name": "levelHash", "type": "bytes32", "internalType": "bytes32" }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "stateMutability": "view"
   },
   {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "name": "levelHashes",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "inputs": [{ "name": "", "type": "bytes32", "internalType": "bytes32" }],
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "levels",
+    "type": "function",
+    "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
     "outputs": [
-      { "internalType": "uint256", "name": "id", "type": "uint256" },
-      { "internalType": "string", "name": "name", "type": "string" },
-      { "internalType": "uint8", "name": "size", "type": "uint8" },
-      { "internalType": "address", "name": "creator", "type": "address" },
-      { "internalType": "uint256", "name": "createdAt", "type": "uint256" },
+      { "name": "id", "type": "uint256", "internalType": "uint256" },
+      { "name": "name", "type": "string", "internalType": "string" },
+      { "name": "size", "type": "uint8", "internalType": "uint8" },
+      { "name": "creator", "type": "address", "internalType": "address" },
+      { "name": "createdAt", "type": "uint256", "internalType": "uint256" },
       {
-        "internalType": "uint256",
         "name": "completionCount",
-        "type": "uint256"
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "stateMutability": "view"
   },
   {
-    "inputs": [],
     "name": "nextLevelId",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "levelId", "type": "uint256" },
-      {
-        "components": [
-          { "internalType": "uint8", "name": "x", "type": "uint8" },
-          { "internalType": "uint8", "name": "y", "type": "uint8" }
-        ],
-        "internalType": "struct YiBiGame.Point[]",
-        "name": "path",
-        "type": "tuple[]"
-      }
-    ],
     "name": "submitSolution",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
+    "type": "function",
     "inputs": [
-      { "internalType": "uint256", "name": "levelId", "type": "uint256" },
+      { "name": "levelId", "type": "uint256", "internalType": "uint256" },
       {
-        "components": [
-          { "internalType": "uint8", "name": "x", "type": "uint8" },
-          { "internalType": "uint8", "name": "y", "type": "uint8" }
-        ],
-        "internalType": "struct YiBiGame.Point[]",
         "name": "path",
-        "type": "tuple[]"
+        "type": "tuple[]",
+        "components": [
+          { "name": "x", "type": "uint8", "internalType": "uint8" },
+          { "name": "y", "type": "uint8", "internalType": "uint8" }
+        ],
+        "internalType": "struct YiBiGame.Point[]"
       }
     ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
     "name": "verifySolution",
-    "outputs": [
-      { "internalType": "bool", "name": "valid", "type": "bool" },
-      { "internalType": "string", "name": "reason", "type": "string" }
+    "type": "function",
+    "inputs": [
+      { "name": "levelId", "type": "uint256", "internalType": "uint256" },
+      {
+        "name": "path",
+        "type": "tuple[]",
+        "components": [
+          { "name": "x", "type": "uint8", "internalType": "uint8" },
+          { "name": "y", "type": "uint8", "internalType": "uint8" }
+        ],
+        "internalType": "struct YiBiGame.Point[]"
+      }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "outputs": [
+      { "name": "valid", "type": "bool", "internalType": "bool" },
+      { "name": "reason", "type": "string", "internalType": "string" }
+    ],
+    "stateMutability": "view"
   }
 ]

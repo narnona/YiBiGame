@@ -8,7 +8,7 @@ dataSources:
     name: YiBiGame
     network: sepolia
     source:
-      address: "0x1294CAD0eD3b97b8052AfceF040A3d65dF3C2811"
+      address: "0x1294cad0ed3b97b8052afcef040a3d65df3c2811"
       abi: YiBiGame
       startBlock: 10182959
     mapping:

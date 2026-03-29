@@ -1,13 +1,13 @@
 {
-  "name": "yibigame_subgraph",
+  "name": "yibigame_sepolia",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ yibigame_subgraph",
-    "create-local": "graph create --node http://localhost:8020/ yibigame_subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/ yibigame_subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 yibigame_subgraph",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ yibigame_sepolia",
+    "create-local": "graph create --node http://localhost:8020/ yibigame_sepolia",
+    "remove-local": "graph remove --node http://localhost:8020/ yibigame_sepolia",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 yibigame_sepolia",
     "test": "graph test"
   },
   "dependencies": {
